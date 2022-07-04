@@ -13,4 +13,8 @@
     <None Include="wwwroot\css\semantic.min.js" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="LiteDB" Version="5.0.12" />
+  </ItemGroup>
+
 </Project>
