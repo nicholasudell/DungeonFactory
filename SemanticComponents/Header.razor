@@ -1,0 +1,45 @@
+﻿@switch(Type)
+{
+	case HeaderType.H1:
+		<h1 class="@ClassesCombined" @attributes=Attributes>@ChildContent</h1>
+	break;
+	case HeaderType.H2:
+		<h2 class="@ClassesCombined" @attributes=Attributes>@ChildContent</h2>
+	break;
+	case HeaderType.H3:
+		<h3 class="@ClassesCombined" @attributes=Attributes>@ChildContent</h3>
+	break;
+	case HeaderType.H4:
+		<h4 class="@ClassesCombined" @attributes=Attributes>@ChildContent</h4>
+	break;
+	case HeaderType.H5:
+		<h5 class="@ClassesCombined" @attributes=Attributes>@ChildContent</h5>
+	break;
+}
+
+
+@code
+{
+	public enum HeaderType
+	{
+		H1,
+		H2,
+		H3,
+		H4,
+		H5
+	}
+
+	string ClassesCombined => $"ui header {Classes}";
+
+	[Parameter]
+	public string Classes { get; set; } = string.Empty;
+
+	[Parameter]
+	public HeaderType Type { get; set; } = HeaderType.H1;
+
+	[Parameter]
+	public RenderFragment ChildContent { get; set; }
+
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string,string> Attributes { get; set; }
+}
