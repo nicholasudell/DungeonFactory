@@ -6,4 +6,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\css\semantic.css" />
+    <None Include="wwwroot\css\semantic.js" />
+    <None Include="wwwroot\css\semantic.min.css" />
+    <None Include="wwwroot\css\semantic.min.js" />
+  </ItemGroup>
+
 </Project>
