@@ -17,4 +17,8 @@
     <PackageReference Include="LiteDB" Version="5.0.12" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SemanticComponents\SemanticComponents.csproj" />
+  </ItemGroup>
+
 </Project>
