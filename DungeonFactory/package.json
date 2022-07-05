@@ -9,9 +9,20 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "gulp": "^4.0.2"
+    "gulp": "^4.0.2",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-if": "^3.0.0",
+    "gulp-rename": "^2.0.0",
+    "gulp-sourcemaps": "^3.0.0",
+    "gulp-uglify": "^3.0.2",
+    "gulp-useref": "^5.0.0",
+    "lazypipe": "^1.0.2",
+    "webpack-stream": "^7.0.0"
   },
   "dependencies": {
-    "fomantic-ui": "^2.8.8"
+    "fomantic-ui": "^2.8.8",
+    "prosemirror-example-setup": "^1.2.1",
+    "prosemirror-schema-basic": "^1.2.0"
   }
 }

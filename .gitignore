@@ -5,3 +5,6 @@ node_modules/
 .vscode/
 DungeonFactory/semantic/dist/
 DungeonFactory/wwwroot/css/semantic/
+DungeonFactory/wwwroot/main.js
+DungeonFactory/wwwroot/main.js.map
+DungeonFactory/wwwroot/css/prosemirror/

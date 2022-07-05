@@ -1,0 +1,23 @@
+﻿@inject IJSRuntime JS
+
+<div id="editor"></div>
+
+<div style="display: none" id="content">
+
+</div>
+
+
+@code {
+
+	const string InitialiseProseMirrorFunctionName = "initialiseProseMirror";
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if(!firstRender)
+		{
+			return;
+		}
+
+		await JS.InvokeVoidAsync(InitialiseProseMirrorFunctionName, "#editor", "#content");
+	}
+}
