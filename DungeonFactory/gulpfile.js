@@ -9,7 +9,7 @@
 function build() {
     return src('Scripts/Index.js')
         .pipe(webpack({
-            devtool: 'source-map',
+            devtool: 'eval-cheap-module-source-map',
             output: {
                 filename: '[name].js',
             },
@@ -26,5 +26,5 @@ function copyProseMirrorCSS() {
         .pipe(dest('wwwroot/css/prosemirror/'));
 }
 
+exports.watch = (cb) => { watch('Scripts/**/*.js', build); cb(); };
 exports.default = parallel(build, copyProseMirrorCSS);
-exports.watch = watch('Scripts/*.js', build());
