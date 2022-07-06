@@ -1,3 +1,3 @@
-﻿import { initialiseProseMirror } from "./ProseMirror.js";
+﻿import { initialiseProseMirror } from "./ProseMirror/ProseMirror.js";
 
 window.initialiseProseMirror = initialiseProseMirror;
