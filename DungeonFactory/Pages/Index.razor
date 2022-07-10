@@ -9,24 +9,22 @@
 
 <Header Type="Header.HeaderType.H1">Hello, world!</Header>
 
-<div class="ui text container">
+<p>
 	This is page @document?.Id (@document?.Title). There are @Blocks.Count() blocks.
-</div>
+</p>
 
-<div class="ui container">
-	@foreach(var block in Blocks)
+@foreach(var block in Blocks)
+{
+	switch(block)
 	{
-		switch(block)
-		{
-			case Model.MarkdownBlock mdb:
-				<p>@mdb.Content</p>
-				<MarkdownBlock @ref="BlockRef" ContentChanged="@(async ()=> { await Task.Yield(); SaveChanges();})" Block="@mdb"></MarkdownBlock>
-				;
-				break;
-			default: throw new InvalidOperationException($"Unknown block: {block.GetType()}");
-		};
-	}
-</div>
+		case Model.MarkdownBlock mdb:
+			<p>@mdb.Content</p>
+			<MarkdownBlock @ref="BlockRef" ContentChanged="@(async ()=> { await Task.Yield(); SaveChanges();})" Block="@mdb"></MarkdownBlock>
+			;
+			break;
+		default: throw new InvalidOperationException($"Unknown block: {block.GetType()}");
+	};
+}
 
 @code
 {

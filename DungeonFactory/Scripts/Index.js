@@ -6,5 +6,6 @@ window.destroyProseMirror = destroyProseMirror;
 
 window.initialiseMenu = function () { 
     $('.sidebar.menu').first()
-        .sidebar('attach events', '#itemCloser');
+        .sidebar('attach events', '#itemCloser')
+        .sidebar('attach events', '.sidebar.menu .item');
 };
