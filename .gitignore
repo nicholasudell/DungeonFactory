@@ -8,3 +8,6 @@ DungeonFactory/wwwroot/css/semantic/
 DungeonFactory/wwwroot/main.js
 DungeonFactory/wwwroot/main.js.map
 DungeonFactory/wwwroot/css/prosemirror/
+DungeonFactory/data.db
+DungeonFactory/data-log.db
+DungeonFactory/LiteDB.Studio.exe
