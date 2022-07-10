@@ -1,3 +1,7 @@
 /*******************************
      User Global Variables
 *******************************/
+
+@fontSize : 13px;
+@fontName : 'Vollkorn';
+@importGoogleFonts : true;
