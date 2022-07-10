@@ -1,4 +1,6 @@
-﻿namespace DungeonFactory.Model
+﻿using LiteDB;
+
+namespace DungeonFactory.Model
 {
     public interface ICRUD<TRecord>
     {
@@ -6,7 +8,7 @@
         /// Inserts the specified record.
         /// </summary>
         /// <param name="record">The record.</param>
-        void Insert(TRecord record);
+        BsonValue Insert(TRecord record);
 
         /// <summary>
         /// Updates the specified record.

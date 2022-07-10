@@ -24,7 +24,7 @@ namespace DungeonFactory.Model
         /// Inserts the specified record.
         /// </summary>
         /// <param name="record"></param>
-        public void Insert(T record) => collection.Insert(record);
+        public BsonValue Insert(T record) => collection.Insert(record);
 
         /// <summary>
         /// Updates the specified record.
