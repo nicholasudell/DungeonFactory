@@ -1,4 +1,5 @@
 using DungeonFactory.Infrastructure;
+using DungeonFactory.Model;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Options;
@@ -10,6 +11,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.Configure<DatabaseOptions>(builder.Configuration.GetSection("Database"));
 builder.Services.AddDatabase();
+builder.Services.AddTransient<DocumentService>();
 
 var app = builder.Build();
 
