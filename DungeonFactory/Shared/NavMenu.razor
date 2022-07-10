@@ -1,20 +1,32 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">DungeonFactory</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
+﻿@using System.Collections.ObjectModel
+@using DungeonFactory.Model
+@inject DocumentService DocumentService;
+@inject IJSRuntime JS;
+
+<div class="ui left vertical menu sidebar">
+
+    <a class="item close">
+        <i class="sidebar icon"></i>
+        Hide
+    </a>
+    
+    <a class="item" @onclick="NewPage">
+        <i class="sidebar icon"></i>
+        New Page
+    </a>
+
+    @foreach(var document in Documents)
+    {
+        <NavLink class="item nav-link" href="@($"Document/{document.Id}")" Match="NavLinkMatch.All" >
+            @document.Title
+        </NavLink>
+    }
 </div>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-    </nav>
+<div class="ui top fixed menu">
+    <a id="itemCloser" class="item close">
+        <i class="sidebar icon"></i>
+    </a>
 </div>
 
 @code {
@@ -26,4 +38,30 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
+
+    private void NewPage()
+    {
+        DocumentService.Insert(Document.CreateDocument());
+        Documents = DocumentService.AllRecords.ToList();
+        StateHasChanged();
+    }
+
+    public ICollection<Model.Document> Documents { get; set; } = new Collection<Model.Document>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        Documents = DocumentService.AllRecords.ToList();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if(!firstRender)
+		{
+			return;
+		}
+
+		await JS.InvokeVoidAsync("initialiseMenu");
+	}
 }
