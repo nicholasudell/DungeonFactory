@@ -1,13 +1,90 @@
-﻿@page "/"
+﻿@page "/Document/{id:int}/"
+@using System.Collections.ObjectModel
+@using DungeonFactory.Components;
+@using DungeonFactory.Model
+@implements IAsyncDisposable
+@inject DocumentService DocumentService;
 
 <PageTitle>Index</PageTitle>
 
 <Header Type="Header.HeaderType.H1">Hello, world!</Header>
 
 <div class="ui text container">
-	Hello there, welcome to the new app.
+	This is page @document?.Id (@document?.Title). There are @Blocks.Count() blocks.
 </div>
 
 <div class="ui container">
-	<ProseMirror></ProseMirror>
+	@foreach(var block in Blocks)
+	{
+		switch(block)
+		{
+			case Model.MarkdownBlock mdb:
+				<p>@mdb.Content</p>
+				<MarkdownBlock @ref="BlockRef" ContentChanged="@(async ()=> { await Task.Yield(); SaveChanges();})" Block="@mdb"></MarkdownBlock>
+				;
+				break;
+			default: throw new InvalidOperationException($"Unknown block: {block.GetType()}");
+		};
+	}
 </div>
+
+@code
+{
+	List<Components.MarkdownBlock> blockRefs = new ();
+
+	Components.MarkdownBlock BlockRef
+	{
+		set => blockRefs.Add(value);
+	}
+
+	[Parameter]
+	public int? Id { get; set; }
+
+	void LoadDocument(int? id)
+	{
+		document = id is null ? 
+			DocumentService.GetDefault() : 
+			DocumentService.FindRecord(id.Value);
+
+		Blocks = document.Blocks;
+
+		StateHasChanged();
+	}
+
+	public ICollection<Model.Block> Blocks { get; set; } = new Collection<Model.Block>();
+
+	void SaveChanges()
+	{
+		if(document is null)
+		{
+			return;
+		}
+
+		DocumentService.Update(document);
+	}
+
+	Document? document;
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		//LoadDocument(Id);
+	}
+
+	protected override void OnParametersSet()
+	{
+		Console.WriteLine($"Parameters set. Id:{Id}");
+		LoadDocument(Id);
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		Console.WriteLine("Page dispose called");
+
+		foreach(var blockRef in blockRefs)
+		{
+			await blockRef.DisposeAsync();
+		}
+	}
+}

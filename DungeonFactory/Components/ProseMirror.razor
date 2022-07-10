@@ -1,0 +1,63 @@
+﻿@using DungeonFactory.Model
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+<div id="editor"></div>
+
+@code {
+
+	[Parameter]
+	public string Content { get; set; }
+
+	public async Task UpdateProseMirrorAsync(string content)
+	{
+		Console.WriteLine("Prose mirror trying to update");
+		await JS.InvokeVoidAsync(UpdateProseMirrorFunctionName, "#editor", content, objRef);
+	}
+
+	bool contentUpdatedExternally = false;
+
+	[JSInvokable]
+	public void UpdateContent(string newContent) 
+	{
+		if(newContent == Content)
+		{
+			return;
+		}
+
+		var oldContent = Content;
+
+		Content = newContent;
+
+		ContentChanged.InvokeAsync(new ValueEventArgs<string>(oldContent, Content));
+	}
+
+	[Parameter]
+	public EventCallback<ValueEventArgs<string>> ContentChanged { get; set; }
+
+	const string InitialiseProseMirrorFunctionName = "initialiseProseMirror";
+	const string UpdateProseMirrorFunctionName = "updateProseMirror";
+	const string DestroyProseMirrorFunctionName = "destroyProseMirror";
+
+	private DotNetObjectReference<ProseMirror>? objRef;
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if(!firstRender)
+		{
+			return;
+		}
+
+		objRef = DotNetObjectReference.Create(this);
+
+		Console.WriteLine("Prose mirror trying to initialise");
+
+		await JS.InvokeVoidAsync(InitialiseProseMirrorFunctionName, "#editor", Content, objRef);
+	}
+
+	public async ValueTask DisposeAsync()
+    {
+		Console.WriteLine("Prosemirror destroyed");
+        await JS.InvokeVoidAsync(DestroyProseMirrorFunctionName, "#editor");
+    }
+}

@@ -1,0 +1,49 @@
+﻿@using DungeonFactory.Model
+@implements IAsyncDisposable
+<ProseMirror @ref="proseMirror" ContentChanged="@UpdateContent" Content="@Block.Content"></ProseMirror>
+
+@code {
+
+	ProseMirror? proseMirror;
+
+	async Task UpdateContent(ValueEventArgs<string> e)
+	{
+		Block.Content = e.Value;
+		await ContentChanged.InvokeAsync(e);
+	}
+
+
+	[Parameter]
+	public EventCallback<ValueEventArgs<string>> ContentChanged { get;set; }
+
+	Model.MarkdownBlock block = default!;
+
+	[Parameter, EditorRequired]
+	public Model.MarkdownBlock Block 
+	{ 
+		get => block;
+		set
+		{
+			if(block == value)
+			{
+				return;
+			}
+
+			block = value;
+
+			Console.WriteLine("Block updated");
+
+			proseMirror?.UpdateProseMirrorAsync(block.Content);
+		} 
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		Console.WriteLine("Markdown block destroyed");
+		if (proseMirror is not null)
+		{
+			await proseMirror.DisposeAsync();
+			proseMirror = null;
+		}
+	}
+}

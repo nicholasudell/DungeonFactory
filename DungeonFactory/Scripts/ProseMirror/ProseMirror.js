@@ -1,4 +1,4 @@
-﻿import { EditorState } from "prosemirror-state"
+﻿import { EditorState, Plugin } from "prosemirror-state"
 import { EditorView } from "prosemirror-view"
 import { undo, redo, history } from "prosemirror-history"
 import { keymap } from "prosemirror-keymap"
@@ -14,7 +14,7 @@ import {
 } from "prosemirror-markdown"
 
 class ProseMirrorView {
-    constructor(target, content) {
+    constructor(target, content, onChange) {
         this.view = new EditorView(target, {
             state: EditorState.create({
                 doc: defaultMarkdownParser.parse(content),
@@ -27,7 +27,12 @@ class ProseMirrorView {
                     dropCursor(),
                     gapCursor()
                 ]
-            })
+            }),
+            dispatchTransaction(tr) {
+                const newState = this.state.apply(tr);
+                this.updateState(newState);
+                onChange(tr);
+            }
         })
     }
 
@@ -38,12 +43,41 @@ class ProseMirrorView {
     destroy() { this.view.destroy() }
 }
 
-function initialiseProseMirror(editorElementId, contentElementId) {
+function initialiseProseMirror(editorElementId, content, dotNetHelper) {
 
     let editor = document.querySelector(editorElementId);
-    let content = document.querySelector(contentElementId).innerHTML;
 
-    window.view = new ProseMirrorView(editor, content)
+    var proseMirror = new ProseMirrorView(editor, content, (tr) => {
+        var updatedContent = proseMirror.content;
+        dotNetHelper.invokeMethodAsync('UpdateContent', updatedContent);
+    });
+
+    window.view = proseMirror;
 }
 
-export { initialiseProseMirror }
+function updateProseMirror(editorElementId, content, dotNetHelper) {
+
+    let editor = document.querySelector(editorElementId);
+
+    let proseMirror = window.view;
+
+    proseMirror.destroy();
+
+    proseMirror = new ProseMirrorView(editor, content, (tr) => {
+        var updatedContent = proseMirror.content;
+        dotNetHelper.invokeMethodAsync('UpdateContent', updatedContent);
+    });
+
+    window.view = proseMirror;
+}
+
+function destroyProseMirror() {
+
+    let proseMirror = window.view;
+
+    proseMirror.destroy();
+
+    window.view = null;
+}
+
+export { updateProseMirror, initialiseProseMirror, destroyProseMirror }
