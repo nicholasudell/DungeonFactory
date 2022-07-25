@@ -1,4 +1,4 @@
-﻿@page "/Document/{id:int}/"
+﻿@page "/Document/{id:guid}/"
 @using System.Collections.ObjectModel
 @using DungeonFactory.Components;
 @using DungeonFactory.Model
@@ -7,23 +7,31 @@
 
 <PageTitle>Index</PageTitle>
 
-<Header Type="Header.HeaderType.H1">Hello, world!</Header>
+<Header Type="Header.HeaderType.H1" Editable ValueChanged="HeaderChanged">@document?.Title</Header>
 
-<p>
-	This is page @document?.Id (@document?.Title). There are @Blocks.Count() blocks.
-</p>
-
-@foreach(var block in Blocks)
+@if(document is null)
 {
-	switch(block)
+	<div class="ui placeholder">
+	  <div class="line"></div>
+	  <div class="line"></div>
+	  <div class="line"></div>
+	  <div class="line"></div>
+	  <div class="line"></div>
+	</div>	
+}
+else
+{
+	@foreach(var block in Blocks)
 	{
-		case Model.MarkdownBlock mdb:
-			<p>@mdb.Content</p>
-			<MarkdownBlock @ref="BlockRef" ContentChanged="@(async ()=> { await Task.Yield(); SaveChanges();})" Block="@mdb"></MarkdownBlock>
-			;
-			break;
-		default: throw new InvalidOperationException($"Unknown block: {block.GetType()}");
-	};
+		switch(block)
+		{
+			case Model.MarkdownBlock mdb:
+				<MarkdownBlock @ref="BlockRef" ContentChanged="@(async ()=> { await Task.Yield(); SaveChanges();})" Block="@mdb"></MarkdownBlock>
+				;
+				break;
+			default: throw new InvalidOperationException($"Unknown block: {block.GetType()}");
+		};
+	}
 }
 
 @code
@@ -35,14 +43,37 @@
 		set => blockRefs.Add(value);
 	}
 
-	[Parameter]
-	public int? Id { get; set; }
-
-	void LoadDocument(int? id)
+	async Task HeaderChanged(ChangeEventArgs e)
 	{
-		document = id is null ? 
-			DocumentService.GetDefault() : 
-			DocumentService.FindRecord(id.Value);
+		if(document is null)
+		{
+			return;
+		}
+
+		document.Title = e.Value?.ToString() ?? "New Page";
+
+		SaveChanges();
+	}
+
+	[Parameter]
+	public Guid? Id { get; set; }
+
+	void LoadDocument(Guid? id)
+	{
+		if(id is null)
+		{
+			document = root = DocumentService.GetDefault();
+		}
+		else
+		{
+			(document, root) = DocumentService.FindNode(id.Value);
+		}
+
+		if(document is null)
+		{
+			Console.WriteLine($"Can't find the document! ID: {id}");
+			return;
+		}
 
 		Blocks = document.Blocks;
 
@@ -53,26 +84,19 @@
 
 	void SaveChanges()
 	{
-		if(document is null)
+		if(root is null)
 		{
 			return;
 		}
 
-		DocumentService.Update(document);
+		DocumentService.Update(root);
 	}
 
 	Document? document;
-
-	protected override void OnInitialized()
-	{
-		base.OnInitialized();
-
-		//LoadDocument(Id);
-	}
+	Document? root;
 
 	protected override void OnParametersSet()
 	{
-		Console.WriteLine($"Parameters set. Id:{Id}");
 		LoadDocument(Id);
 	}
 
@@ -80,9 +104,9 @@
 	{
 		Console.WriteLine("Page dispose called");
 
-		foreach(var blockRef in blockRefs)
-		{
-			await blockRef.DisposeAsync();
-		}
+		//foreach(var blockRef in blockRefs)
+		//{
+		//	await blockRef.DisposeAsync();
+		//}
 	}
 }
