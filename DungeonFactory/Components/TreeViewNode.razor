@@ -1,0 +1,67 @@
+﻿@using DungeonFactory.Model
+@inject NavigationManager NavigationManager;
+@inject DocumentService DocumentService;
+
+<div class="item">
+	<Grid Classes="compact">
+		<Row>
+			<Column Classes="one wide">
+				@if (Node.Children.Any())
+				{
+					<i @onclick="()=>Toggle()" class="@ToggleIcon icon"></i>
+				}
+			</Column>
+			<Column Classes="one wide">
+				<i @onclick="()=>NewChild()" class="plus icon"></i>
+			</Column>
+			<Column Classes="twelve wide">
+				<a @onclick="()=>Click()" class="content">
+					@Node.Document.Title
+				</a>
+			</Column>
+		</Row>
+	</Grid>
+	
+	@if(Node.Expanded && Node.Any())
+	{
+		<div class="list">
+			@foreach(var child in Node)
+			{
+				<TreeViewNode Node="@child"></TreeViewNode>
+			}
+		</div>
+	}
+</div>
+
+@code {
+
+	[Parameter, EditorRequired]
+	public Node Node { get; set; } = default!;
+
+	string ToggleIcon => Node.Expanded ? "angle down" : "angle right";
+
+	void Click()
+	{
+		NavigationManager.NavigateTo($"Document/{Node.Document.Id}");
+	}
+
+	void Toggle()
+	{
+		Node.Expanded = !Node.Expanded;
+	}
+
+	void NewChild()
+	{
+		var document = Document.CreateDocument();
+
+		(var parentRecord, var root) = DocumentService.FindNode(Node.Document.Id);
+		
+		parentRecord!.Children.Add(document);
+		
+		DocumentService.Update(root!);
+
+		var id = document.Id;
+
+        NavigationManager.NavigateTo($"Document/{id}");
+	}
+}

@@ -1,0 +1,17 @@
+﻿<div class="ui @GridDefinition grid @Classes" @attributes="Attributes">
+	@ChildContent	
+</div>
+
+@code {
+	[Parameter]
+	public string Classes { get; set; } = string.Empty;
+
+	[Parameter]
+	public string GridDefinition { get; set; } = string.Empty;
+
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IDictionary<string,object> Attributes { get; set; }
+
+	[Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

@@ -1,22 +1,20 @@
 ﻿@using System.Collections.ObjectModel
+@using DungeonFactory.Components
 @using DungeonFactory.Model
+@implements IDisposable;
 @inject DocumentService DocumentService;
 @inject IJSRuntime JS;
 @inject NavigationManager NavigationManager;
 
-<div class="ui left inverted vertical menu sidebar">
+<div class="ui left inverted sidebar visible">
     
-    <a class="item" @onclick="NewPage">
-        <i class="sidebar icon"></i>
-        New Page
+    <a class="ui inverted fluid button" @onclick="NewPage">
+        <i class="plus icon"></i>
+        Create New
     </a>
 
-    @foreach(var document in Documents)
-    {
-        <NavLink class="item nav-link" href="@($"Document/{document.Id}")" Match="NavLinkMatch.All" >
-            @document.Title
-        </NavLink>
-    }
+    <TreeView Nodes="Nodes"></TreeView>
+
 </div>
 
 <div class="ui top inverted fixed menu">
@@ -35,13 +33,22 @@
         collapseNavMenu = !collapseNavMenu;
     }
 
+    private void Delete(Document document)
+    {
+        DocumentService.Delete(document);
+        Documents = DocumentService.AllRecords.ToList();
+        StateHasChanged();
+    }
+
     private void NewPage()
     {
         var id = DocumentService.Insert(Document.CreateDocument());
         Documents = DocumentService.AllRecords.ToList();
-        NavigationManager.NavigateTo($"Document/{id.AsInt32}");
+        NavigationManager.NavigateTo($"Document/{id.AsGuid}");
         StateHasChanged();
     }
+
+    public List<Node> Nodes => Documents.Select(document=> new Node(document)).ToList();
 
     public ICollection<Model.Document> Documents { get; set; } = new Collection<Model.Document>();
 
@@ -50,15 +57,28 @@
         base.OnInitialized();
 
         Documents = DocumentService.AllRecords.ToList();
+
+        DocumentService.CollectionChanged += HandleCollectionChanged;
+    }
+
+    void HandleCollectionChanged(object? sender, EventArgs e)
+    {
+        Documents = DocumentService.AllRecords.ToList();
+        StateHasChanged();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		if(!firstRender)
-		{
-			return;
-		}
+    {
+        if(!firstRender)
+        {
+            return;
+        }
 
-		await JS.InvokeVoidAsync("initialiseMenu");
-	}
+        await JS.InvokeVoidAsync("initialiseMenu");
+    }
+
+    public void Dispose()
+    {
+        DocumentService.CollectionChanged -= HandleCollectionChanged;
+    }
 }

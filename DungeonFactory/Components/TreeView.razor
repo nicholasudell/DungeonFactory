@@ -1,0 +1,13 @@
+﻿@using DungeonFactory.Model
+<div class="ui selection list">
+	@foreach(var node in Nodes)
+	{
+		<TreeViewNode Node="@node"></TreeViewNode>
+	}
+</div>
+
+@code {
+
+	[Parameter]
+	public List<Node> Nodes { get; set; } = new();
+}
