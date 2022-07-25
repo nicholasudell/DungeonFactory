@@ -10,6 +10,7 @@ namespace DungeonFactory.Model
         {
             var document = new Document()
             {
+                Id = Guid.NewGuid(),
                 Title = "New Page"
             };
 
@@ -21,11 +22,13 @@ namespace DungeonFactory.Model
             return document;
         }
 
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         public string Title { get; set; }
 
         public List<Block> Blocks { get; set; } = new List<Block>();
+
+        public List<Document> Children { get; set; } = new List<Document>();
 
         public bool IsStartingDocument { get; set; } = false;
     }
