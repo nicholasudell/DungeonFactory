@@ -5,7 +5,14 @@ window.updateProseMirror = updateProseMirror;
 window.destroyProseMirror = destroyProseMirror;
 
 window.initialiseMenu = function () { 
-    $('.sidebar.menu').first()
+    $('.sidebar').first()
+        .sidebar('setting', {
+            dimPage : false
+        })
         .sidebar('attach events', '#itemCloser')
-        .sidebar('attach events', '.sidebar.menu .item');
+        .sidebar('attach events', '.sidebar-closer');
 };
+
+window.getValueOfContentEditable = function (element) {
+    return element.innerText;
+}

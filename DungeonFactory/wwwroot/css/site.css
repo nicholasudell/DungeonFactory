@@ -1,4 +1,40 @@
+.sidebar.inverted {
+    background: rgb(25,26,27);
+}
 
+.ui.inverted.sidebar > .ui.selection.list .list > .item, .ui.inverted.sidebar > .ui.selection.list > .item {
+    padding-right:0px;
+}
+
+.ui.sidebar .ui.list .ui.grid.compact .row .column a {
+    padding-left: 0.5rem;
+}
+
+.ui.sidebar .ui.list .item > .ui.grid.compact > .row > .column {
+    color: rgb(255, 255, 255, 0.5);
+}
+
+.ui.sidebar .ui.list .item > .ui.grid.compact > .row > .column a {
+    color: rgb(255, 255, 255, 0.5);
+}
+
+.ui.sidebar .ui.list .item > .ui.grid.compact > .row:hover  {
+    background: rgb(45,46,47);
+}
+
+.ui.sidebar .ui.list .item > .ui.grid.compact > .row:hover > .column :hover {
+    color: rgb(255, 255, 255);
+}
+
+.ui.sidebar .item .list  {
+    padding-top:0px;
+    padding-bottom:0px;
+}
+
+.ui.selection.list .list > .item, .ui.selection.list > .item {
+    padding-bottom:0px;
+    padding-top:0.35rem;
+}
 
 #blazor-error-ui {
     background: lightyellow;
