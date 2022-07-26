@@ -1,0 +1,23 @@
+﻿@inject IJSRuntime JS;
+
+<div id="map"></div>
+
+@code {
+	[Parameter]
+	public string MapUrl { get; set; }
+
+	const string InitialiseLeafletFunctionName = "initialiseMap";
+	const string AddMarkerFunctionName = "addMarker";
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if(!firstRender)
+		{
+			return;
+		}
+
+		Console.WriteLine("Leaflet trying to initialise");
+
+		await JS.InvokeVoidAsync(InitialiseLeafletFunctionName,MapUrl, 0, 340,318);
+	}
+}
