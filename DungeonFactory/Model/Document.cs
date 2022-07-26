@@ -4,6 +4,22 @@ using System.Collections.ObjectModel;
 
 namespace DungeonFactory.Model
 {
+    public class Map : Document
+    {
+        public static Map CreateMap()
+        {
+            var map = new Map()
+            {
+                Id = Guid.NewGuid(),
+                Title = "New Page"
+            };
+
+            return map;
+        }
+
+        public bool HasMap { get; set; }
+    }
+
     public class Document
     {
         public static Document CreateDocument()

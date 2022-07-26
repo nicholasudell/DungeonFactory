@@ -18,13 +18,33 @@ function build() {
 }
 
 function copyProseMirrorCSS() {
-    return src('node_modules/prosemirror*/style/*.css')
-        .pipe(sourcemaps.init())
-            .pipe(concat('prosemirror.css'))
-            .pipe(cleanCSS())
-        .pipe(sourcemaps.write())
-        .pipe(dest('wwwroot/css/prosemirror/'));
+    return copyCSS(
+        'node_modules/prosemirror*/style/*.css',
+        'prosemirror.css',
+        'wwwroot/css/prosemirror/'
+    );
 }
 
-exports.watch = (cb) => { watch('Scripts/**/*.js', build); cb(); };
-exports.default = parallel(build, copyProseMirrorCSS);
+function copyCSS(input, filename, output) {
+    return src(input)
+        .pipe(sourcemaps.init())
+        .pipe(concat(filename))
+        .pipe(cleanCSS())
+        .pipe(sourcemaps.write())
+        .pipe(dest(output));
+}
+
+function copyLeafletCSS() {
+    return copyCSS(
+        'node_modules/leaflet/dist/leaflet.css',
+        'leaflet.css',
+        'wwwroot/css/leaflet/'
+    );
+}
+
+exports.watch = (cb) => {
+    watch('Scripts/**/*.js', build);
+    cb();
+};
+
+exports.default = parallel(build, copyProseMirrorCSS, copyLeafletCSS);

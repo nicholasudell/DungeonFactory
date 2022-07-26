@@ -12,9 +12,12 @@
 				}
 			</Column>
 			<Column Classes="one wide">
-				<i @onclick="()=>NewChild()" class="plus icon"></i>
+				<i @onclick="()=>NewDocument()" class="plus icon"></i>
 			</Column>
-			<Column Classes="twelve wide">
+			<Column Classes="one wide">
+				<i @onclick="()=>NewMap()" class="world icon"></i>
+			</Column>
+			<Column Classes="eleven wide">
 				<a @onclick="()=>Click()" class="content">
 					@Node.Document.Title
 				</a>
@@ -42,7 +45,13 @@
 
 	void Click()
 	{
-		NavigationManager.NavigateTo($"Document/{Node.Document.Id}");
+		var pathSlug = Node.Document switch
+		{
+			Map => "Map",
+			_ => "Document"
+		};
+
+		NavigationManager.NavigateTo($"{pathSlug}/{Node.Document.Id}");
 	}
 
 	void Toggle()
@@ -50,7 +59,7 @@
 		Node.Expanded = !Node.Expanded;
 	}
 
-	void NewChild()
+	void NewDocument()
 	{
 		var document = Document.CreateDocument();
 
@@ -63,5 +72,20 @@
 		var id = document.Id;
 
         NavigationManager.NavigateTo($"Document/{id}");
+	}
+
+	void NewMap()
+	{
+		var document = Map.CreateMap();
+
+		(var parentRecord, var root) = DocumentService.FindNode(Node.Document.Id);
+		
+		parentRecord!.Children.Add(document);
+		
+		DocumentService.Update(root!);
+
+		var id = document.Id;
+
+        NavigationManager.NavigateTo($"Map/{id}");
 	}
 }

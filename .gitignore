@@ -11,3 +11,5 @@ DungeonFactory/wwwroot/css/prosemirror/
 DungeonFactory/data.db
 DungeonFactory/data-log.db
 DungeonFactory/LiteDB.Studio.exe
+DungeonFactory/wwwroot/css/leaflet/
+DungeonFactory/DungeonFactory.csproj.user

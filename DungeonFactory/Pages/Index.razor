@@ -5,34 +5,37 @@
 @implements IAsyncDisposable
 @inject DocumentService DocumentService;
 
-<PageTitle>Index</PageTitle>
+<article class="ui container">
 
-<Header Type="Header.HeaderType.H1" Editable ValueChanged="HeaderChanged">@document?.Title</Header>
+	<PageTitle>Index</PageTitle>
 
-@if(document is null)
-{
-	<div class="ui placeholder">
-	  <div class="line"></div>
-	  <div class="line"></div>
-	  <div class="line"></div>
-	  <div class="line"></div>
-	  <div class="line"></div>
-	</div>	
-}
-else
-{
-	@foreach(var block in Blocks)
+	<Header Type="Header.HeaderType.H1" Editable ValueChanged="HeaderChanged">@document?.Title</Header>
+
+	@if(document is null)
 	{
-		switch(block)
-		{
-			case Model.MarkdownBlock mdb:
-				<MarkdownBlock @ref="BlockRef" ContentChanged="@(async ()=> { await Task.Yield(); SaveChanges();})" Block="@mdb"></MarkdownBlock>
-				;
-				break;
-			default: throw new InvalidOperationException($"Unknown block: {block.GetType()}");
-		};
+		<div class="ui placeholder">
+		  <div class="line"></div>
+		  <div class="line"></div>
+		  <div class="line"></div>
+		  <div class="line"></div>
+		  <div class="line"></div>
+		</div>	
 	}
-}
+	else
+	{
+		@foreach(var block in Blocks)
+		{
+			switch(block)
+			{
+				case Model.MarkdownBlock mdb:
+					<MarkdownBlock @ref="BlockRef" ContentChanged="@(async ()=> { await Task.Yield(); SaveChanges();})" Block="@mdb"></MarkdownBlock>
+					;
+					break;
+				default: throw new InvalidOperationException($"Unknown block: {block.GetType()}");
+			};
+		}
+	}
+</article>
 
 @code
 {

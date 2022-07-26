@@ -1,0 +1,74 @@
+﻿@page "/Map/{id:guid}/"
+@using System.Collections.ObjectModel
+@using DungeonFactory.Components;
+@using DungeonFactory.Model
+@inject NavigationManager NavigationManager;
+@inject DocumentService DocumentService;
+@inject MapService MapService;
+
+<PageTitle>Map</PageTitle>
+
+@if (map.HasMap)
+{
+	<Leaflet MapUrl="@(NavigationManager.ToAbsoluteUri($"/api/map/{Id}").AbsoluteUri)"></Leaflet>
+}
+else
+{
+	<div class="ui text container">
+		<p>Upload a map to get started.</p>
+		<InputFile OnChange="@LoadMap"></InputFile>
+	</div>
+}
+
+@code
+{
+	[Parameter]
+	public Guid? Id { get; set; }
+
+	protected override void OnParametersSet()
+	{
+		LoadDocument(Id);
+	}
+
+	Model.Map map;
+	Document root;
+
+	void LoadDocument(Guid? id)
+	{
+		(var document, root) = DocumentService.FindNode(id.Value);
+
+		if(document is null)
+		{
+			Console.WriteLine($"Can't find the document! ID: {id}");
+			return;
+		}
+
+		if(!(document is Model.Map))
+		{
+			Console.WriteLine($"Document is not a map! ID: {id}");
+			return;
+		}
+
+		map = document as Model.Map;
+
+		StateHasChanged();
+	}
+
+	private async Task LoadMap(InputFileChangeEventArgs e)
+	{
+		var stream = e.File.OpenReadStream(50000000);
+
+		var memoryStream = new MemoryStream();
+
+		await stream.CopyToAsync(memoryStream);
+
+		memoryStream.Position = 0;
+
+		MapService.SaveMapContents(map, memoryStream);
+
+		map.HasMap = true;
+
+		DocumentService.Update(root);
+	}
+
+}
