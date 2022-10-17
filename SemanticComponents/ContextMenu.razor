@@ -1,0 +1,22 @@
+﻿@using Microsoft.JSInterop
+@inject IJSRuntime JS;
+
+<div id="@ComponentId" class="ui fluid popup top left transition hidden">
+    <div class="ui vertical menu">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    const string Register = "registerTooltip";
+
+    private string ComponentId { get; init; } = Guid.NewGuid().ToString().Replace("-", string.Empty);
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await JS.InvokeVoidAsync(Register,$"#{ComponentId}");
+    }
+}

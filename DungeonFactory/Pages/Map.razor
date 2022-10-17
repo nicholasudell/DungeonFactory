@@ -8,7 +8,7 @@
 
 <PageTitle>Map</PageTitle>
 
-@if (map.HasMap)
+@if (map?.HasMap == true)
 {
 	<Leaflet MapUrl="@(NavigationManager.ToAbsoluteUri($"/api/map/{Id}").AbsoluteUri)"></Leaflet>
 }
@@ -27,15 +27,20 @@ else
 
 	protected override void OnParametersSet()
 	{
-		LoadDocument(Id);
+		if(Id is null)
+		{
+			return;
+		}
+
+		LoadDocument(Id.Value);
 	}
 
-	Model.Map map;
-	Document root;
+	Model.Map? map;
+	Document? root;
 
-	void LoadDocument(Guid? id)
+	void LoadDocument(Guid id)
 	{
-		(var document, root) = DocumentService.FindNode(id.Value);
+		(var document, root) = DocumentService.FindNode(id);
 
 		if(document is null)
 		{
@@ -49,14 +54,14 @@ else
 			return;
 		}
 
-		map = document as Model.Map;
+		map = (document as Model.Map)!;
 
 		StateHasChanged();
 	}
 
 	private async Task LoadMap(InputFileChangeEventArgs e)
 	{
-		var stream = e.File.OpenReadStream(50000000);
+		var stream = e.File.OpenReadStream(500000000);
 
 		var memoryStream = new MemoryStream();
 
@@ -64,11 +69,11 @@ else
 
 		memoryStream.Position = 0;
 
-		MapService.SaveMapContents(map, memoryStream);
+		MapService.SaveMapContents(map!, memoryStream);
 
-		map.HasMap = true;
+		map!.HasMap = true;
 
-		DocumentService.Update(root);
+		DocumentService.Update(root!);
 	}
 
 }
